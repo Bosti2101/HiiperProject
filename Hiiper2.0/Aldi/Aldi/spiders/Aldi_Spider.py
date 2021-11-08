@@ -1,9 +1,10 @@
 import scrapy
+import json
 
 
 class AldiSpiderSpider(scrapy.Spider):
     name = 'Aldi_Spider'
-    allowed_domains = ['aldi.nl/producten.html']
+    allowed_domains = ['aldi.nl']
     start_urls = ['https://www.aldi.nl/producten.html']
 
     def parse(self, response):
@@ -19,10 +20,13 @@ class AldiSpiderSpider(scrapy.Spider):
             yield response.follow(link.get(), callback=self.parse_data)
 
     def parse_data(self, response):
-        datas = response.css('div.container')
-        for data in datas:
-            yield {
-                'product_name': '',
-                'price': data.css('span.price__wrapper::text').get().strip(),
-                'description': '',
-            }
+        info1 = response.css(
+            '.mod-article-title-intro::attr(data-article)')
+        info2 = json.loads(info1)
+        yield {
+            'id': info2['productInfo']['productID'],
+            'product_name': info2['productInfo']['productName'],
+            'price': info2['productInfo']['priceWithTax'],
+            'description': '',
+            'url': info2['id'],
+        }
