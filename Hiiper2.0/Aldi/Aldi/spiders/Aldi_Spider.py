@@ -27,7 +27,7 @@ class AldiSpiderSpider(scrapy.Spider):
         time1 = datetime.datetime.now().strftime("%X")
 
         yield {
-            'shop': '',
+            'shop': 'Aldi',
             'product_id': info2['productInfo']['productID'],
             'product_name': info2['productInfo']['productName'],
             'price': info2['productInfo']['priceWithTax'],
