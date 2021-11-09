@@ -1,5 +1,6 @@
 import scrapy
 import json
+import datetime
 
 
 class AldiSpiderSpider(scrapy.Spider):
@@ -20,13 +21,23 @@ class AldiSpiderSpider(scrapy.Spider):
             yield response.follow(link.get(), callback=self.parse_data)
 
     def parse_data(self, response):
-        info1 = response.css(
-            '.mod-article-title-intro::attr(data-article)')
+        info1 = response.css('.mod-article-intro::attr(data-article)').get()
         info2 = json.loads(info1)
+        today1 = datetime.datetime.now().strftime("%x")
+        time1 = datetime.datetime.now().strftime("%X")
+
         yield {
-            'id': info2['productInfo']['productID'],
+            'shop': '',
+            'product_id': info2['productInfo']['productID'],
             'product_name': info2['productInfo']['productName'],
             'price': info2['productInfo']['priceWithTax'],
             'description': '',
-            'url': info2['id'],
+            'images': '',
+            'category_level_1': info2['productCategory']['primaryCategory'],
+            'category_level_2': info2['productCategory']['subCategory1'],
+            'quantity': response.css('span.price__unit::text').get().strip(),
+            'amount': '',
+            'url': 'aldi.nl' + info2['id'],
+            'date': today1,
+            'time': time1,
         }
